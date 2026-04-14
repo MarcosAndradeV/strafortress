@@ -35,6 +35,7 @@ int main(int argc, char** argv)
     cmd_append(&cmd, CXX);
     cmd_append(&cmd, "-o", BIN_PATH);
     cmd_append(&cmd, SRC_FOLDER"/main.cpp");
+    cmd_append(&cmd, SRC_FOLDER"/world.cpp");
     cmd_append(&cmd, LIBS);
     if(!cmd_run(&cmd)) return 1;
 
