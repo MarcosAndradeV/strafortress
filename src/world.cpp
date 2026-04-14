@@ -43,7 +43,7 @@ static float grad(int hash, float x, float y) {
     int h = hash & 3;
     float u = h < 2 ? x : y;
     float v = h < 2 ? y : x;
-    return ((h & 1) ? -u : u) + ((h & 2) ? -2.0f * v : 2.0f * v); 
+    return ((h & 1) ? -u : u) + ((h & 2) ? -2.0f * v : 2.0f * v);
 }
 
 float World::Noise2D(float x, float y, unsigned int seed) const {
@@ -68,7 +68,7 @@ float World::Noise2D(float x, float y, unsigned int seed) const {
 
     float res = lerp(v, lerp(u, grad(aa, x, y), grad(ba, x - 1, y)),
                         lerp(u, grad(ab, x, y - 1), grad(bb, x - 1, y - 1)));
-    
+
     return (res + 1.0f) / 2.0f; // Roughly normalizes -1..1 to 0..1
 }
 
@@ -122,7 +122,7 @@ void World::DrawWorld(const Camera2D& camera, int screenWidth, int screenHeight)
                 case BiomeType::Forest: c = DARKGREEN; break;
                 case BiomeType::Mountain: c = GRAY; break;
             }
-            
+
             DrawRectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, c);
             DrawRectangleLines(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, Fade(LIME, 0.2f));
         }

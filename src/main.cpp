@@ -1,5 +1,7 @@
 #include <raylib.h>
+#include <cmath>
 #include "world.hpp"
+#include "simulation.hpp"
 
 #include "../include/logging.h"
 #include "../include/config.h"
@@ -14,6 +16,8 @@ int main()
 
     World world(1024, 1024);
     world.Generate(42);
+    
+    SimulationManager simManager;
 
     // Default reveal 32x32 center sector
     int centerX = 1024 / 2;
@@ -28,6 +32,9 @@ int main()
 
     while(!WindowShouldClose()) {
         float dt = GetFrameTime();
+        
+        simManager.Update(dt, world);
+        
         float speed = 500.0f / camera.zoom;
 
         if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) camera.target.x += speed * dt;
@@ -42,14 +49,23 @@ int main()
             if (camera.zoom > 3.0f) camera.zoom = 3.0f;
         }
 
+        if (IsKeyPressed(KEY_E)) {
+            Vector2 mouseWorld = GetScreenToWorld2D(GetMousePosition(), camera);
+            int gridX = (int)std::floor(mouseWorld.x / TILE_SIZE);
+            int gridY = (int)std::floor(mouseWorld.y / TILE_SIZE);
+            simManager.GetExtractorManager().SpawnExtractor(gridX, gridY, world);
+        }
+
         BeginDrawing();
         ClearBackground(BACKGROUND_COLOR);
 
         BeginMode2D(camera);
         world.DrawWorld(camera, WINDOW_WIDTH, WINDOW_HEIGHT);
+        simManager.Draw(camera);
         EndMode2D();
 
         DrawFPS(10, 10);
+        DrawText("Press 'E' to spawn an Extractor", 10, 30, 20, RAYWHITE);
         EndDrawing();
     }
 
