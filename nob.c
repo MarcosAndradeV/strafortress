@@ -14,6 +14,16 @@
 
 static Cmd cmd = {0};
 
+bool src_walk_dir(Walk_Entry entry) {
+    if(entry.type == FILE_REGULAR) {
+        String_View path = sv_from_cstr(entry.path);
+        if(!sv_ends_with_cstr(path, ".cpp")) return true;
+        Cmd *cmd = entry.data;
+        cmd_append(cmd, temp_strdup(entry.path));
+    }
+    return true;
+}
+
 int main(int argc, char** argv)
 {
     GO_REBUILD_URSELF(argc, argv);
@@ -34,9 +44,11 @@ int main(int argc, char** argv)
 
     cmd_append(&cmd, CXX);
     cmd_append(&cmd, "-o", BIN_PATH);
-    cmd_append(&cmd, SRC_FOLDER"/main.cpp");
-    cmd_append(&cmd, SRC_FOLDER"/world.cpp");
-    cmd_append(&cmd, SRC_FOLDER"/simulation.cpp");
+
+    size_t mark = temp_save(); {
+        walk_dir(SRC_FOLDER, src_walk_dir, .data = &cmd);
+    } temp_rewind(mark);
+
     cmd_append(&cmd, LIBS);
     if(!cmd_run(&cmd)) return 1;
 
